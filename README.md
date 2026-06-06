@@ -53,6 +53,16 @@ python -m pip install -r requirements.txt
 python demo.py
 ```
 
+## Run dashboard
+
+Start the web dashboard (reads `audit.log.jsonl` and exposes a live evaluator):
+
+```bash
+python run_dashboard.py
+```
+
+Open [http://127.0.0.1:8080](http://127.0.0.1:8080). Run `python demo.py` in another terminal to populate the audit log, or use the built-in evaluator panel.
+
 Expected output order:
 
 1. `BLOCK`

