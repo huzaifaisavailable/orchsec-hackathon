@@ -132,7 +132,7 @@ py -c "import imaplib; m=imaplib.IMAP4('localhost',1143); print(m.welcome); prin
 From this repository:
 
 ```bash
-cd "C:\Huzaifa DATA\Tool\orchsec hackathon"
+cd path\to\orchsec-hackathon
 py -m orchsec.smtp_proxy --listen-port 2525 --forward-host localhost --forward-port 2526
 ```
 
@@ -153,7 +153,7 @@ OrchSec SMTP proxy listening on ('127.0.0.1', 2525); forwarding allowed mail to 
 This proxy lets DVEA keep using its hardcoded `gpt-4-1106-preview` model name while OrchSec rewrites the request to a current model.
 
 ```bash
-cd "C:\Huzaifa DATA\Tool\orchsec hackathon"
+cd path\to\orchsec-hackathon
 set OPENAI_API_KEY=your_key_here
 py -m orchsec.openai_model_proxy --port 8787 --source-model gpt-4-1106-preview --target-model gpt-4o-mini
 ```
@@ -161,7 +161,7 @@ py -m orchsec.openai_model_proxy --port 8787 --source-model gpt-4-1106-preview -
 PowerShell version:
 
 ```powershell
-cd "C:\Huzaifa DATA\Tool\orchsec hackathon"
+cd "path\to\orchsec-hackathon"
 $env:OPENAI_API_KEY="your_key_here"
 py -m orchsec.openai_model_proxy --port 8787 --source-model gpt-4-1106-preview --target-model gpt-4o-mini
 ```
@@ -183,7 +183,7 @@ http://127.0.0.1:8787/health
 From the DVEA repository:
 
 ```powershell
-cd "C:\Huzaifa DATA\Tool\dvea"
+cd "path\to\damn-vulnerable-email-agent"
 .\env\Scripts\Activate.ps1
 $env:OPENAI_API_BASE="http://127.0.0.1:8787/v1"
 streamlit run main.py
@@ -252,7 +252,7 @@ Expected behavior:
 Check the audit log from the OrchSec repository:
 
 ```powershell
-Get-Content "C:\Huzaifa DATA\Tool\orchsec hackathon\orchsec-proxy-audit.log.jsonl"
+Get-Content "path\to\orchsec-hackathon\orchsec-proxy-audit.log.jsonl"
 ```
 
 Look for:
@@ -268,7 +268,7 @@ Look for:
 If DVEA shows `No module named 'orchsec'`, the OrchSec command was run from the DVEA folder. Run OrchSec commands from:
 
 ```text
-C:\Huzaifa DATA\Tool\orchsec hackathon
+path\to\orchsec-hackathon
 ```
 
 If Docker says `port is already allocated`, an old SMTP4Dev container is still running. Use:
