@@ -16,7 +16,7 @@ from .detectors import (
     heuristic_findings,
     message_findings,
 )
-from .judge import judge_action
+from .judge import DEFAULT_JUDGE_BASE_URL, DEFAULT_JUDGE_MODEL, judge_action
 
 
 ALLOW = "ALLOW"
@@ -49,8 +49,8 @@ class OrchSec:
         audit_path: str = "audit.log.jsonl",
         use_judge: bool = True,
         fail_closed: bool = True,
-        judge_model: str = "gpt-4o-mini",
-        judge_base_url: str | None = None,
+        judge_model: str = DEFAULT_JUDGE_MODEL,
+        judge_base_url: str | None = DEFAULT_JUDGE_BASE_URL,
     ) -> None:
         self.policy_path = Path(policy_path)
         self.audit_path = Path(audit_path)
