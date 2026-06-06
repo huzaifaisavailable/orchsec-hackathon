@@ -1,5 +1,6 @@
 PyYAML>=6.0
 rich>=13.0
+# Qwen exposes an OpenAI-compatible API, so the official openai SDK is reused.
 openai>=1.0
 pytest>=8.0
 

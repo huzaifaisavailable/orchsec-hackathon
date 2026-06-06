@@ -63,13 +63,21 @@ The audit file `audit.log.jsonl` is written with redacted fields.
 
 ## Optional LLM judge
 
-Set key:
+The judge talks to the **Qwen** API through its OpenAI-compatible endpoint.
+
+Set the key (any of these env vars works, checked in this order):
 
 ```bash
-set OPENAI_API_KEY=your_key_here
+export QWEN_API_KEY=your_key_here
+# or DASHSCOPE_API_KEY, or the legacy OPENAI_API_KEY
 ```
 
-Judge defaults to `gpt-4o-mini`. You can override model/base URL via `OrchSec(..., judge_model=..., judge_base_url=...)` for OpenAI-compatible providers.
+Defaults:
+
+- model: `qwen3.6-flash`
+- base URL: `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`
+
+You can override the model/base URL via `OrchSec(..., judge_model=..., judge_base_url=...)` for any OpenAI-compatible provider.
 
 ## Integrating with vulnerable email agent (DVEA)
 

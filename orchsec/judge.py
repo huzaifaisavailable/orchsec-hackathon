@@ -17,6 +17,23 @@ SYSTEM_PROMPT = (
     "Return strict JSON only with keys: verdict, confidence, reason. No prose."
 )
 
+# Default judge backend: Qwen via its OpenAI-compatible API endpoint.
+DEFAULT_JUDGE_MODEL = "qwen3.6-flash"
+DEFAULT_JUDGE_BASE_URL = "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
+
+# Accepted API key environment variables, in priority order. QWEN_API_KEY /
+# DASHSCOPE_API_KEY are preferred; OPENAI_API_KEY is kept as a fallback so
+# existing OpenAI-compatible setups keep working.
+_API_KEY_ENV_VARS = ("QWEN_API_KEY", "DASHSCOPE_API_KEY", "OPENAI_API_KEY")
+
+
+def _resolve_api_key() -> str | None:
+    for name in _API_KEY_ENV_VARS:
+        value = os.getenv(name)
+        if value:
+            return value
+    return None
+
 
 @dataclass(slots=True)
 class Verdict:
@@ -59,13 +76,18 @@ def _parse_verdict(raw: str) -> Verdict:
 def judge_action(
     action: Action,
     *,
-    model: str = "gpt-4o-mini",
-    base_url: str | None = None,
+    model: str = DEFAULT_JUDGE_MODEL,
+    base_url: str | None = DEFAULT_JUDGE_BASE_URL,
     timeout: float = 15.0,
 ) -> Verdict:
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = _resolve_api_key()
     if not api_key:
-        return Verdict(verdict="block", reason="OPENAI_API_KEY missing", confidence=0.0, available=False)
+        return Verdict(
+            verdict="block",
+            reason="No judge API key set (QWEN_API_KEY/DASHSCOPE_API_KEY/OPENAI_API_KEY)",
+            confidence=0.0,
+            available=False,
+        )
 
     try:
         from openai import OpenAI
