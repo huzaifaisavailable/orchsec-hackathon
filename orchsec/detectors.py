@@ -174,6 +174,16 @@ def message_findings(action: Action) -> list[Finding]:
     findings: list[Finding] = []
     text = normalize(action.raw_output or action.text_blob())
 
+    if action.source_context == "untrusted" and SECRET_HINT_RE.search(text):
+        findings.append(
+            Finding(
+                policy_id="heuristic.message_sensitive_disclosure",
+                decision="block",
+                severity="high",
+                reason="Message output contains sensitive content from an untrusted context.",
+            )
+        )
+
     for url in URL_RE.findall(text):
         parsed = urlparse(url)
         if not parsed.netloc:

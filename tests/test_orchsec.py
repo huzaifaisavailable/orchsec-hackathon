@@ -68,6 +68,19 @@ def test_message_with_base64_url_query_blocks(tmp_path: Path) -> None:
     assert decision.decision == BLOCK
 
 
+def test_untrusted_message_with_sensitive_content_blocks(tmp_path: Path) -> None:
+    orch = make_engine(tmp_path)
+    action = Action(
+        tool="final_answer",
+        action_type="message",
+        raw_output="Your bank password is BankPassword123.",
+        args={},
+        source_context="untrusted",
+    )
+    decision = orch.evaluate(action)
+    assert decision.decision == BLOCK
+
+
 def test_base64_hidden_secret_blocks_after_normalize(tmp_path: Path) -> None:
     orch = make_engine(tmp_path)
     action = Action(
