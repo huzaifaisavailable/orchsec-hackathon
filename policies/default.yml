@@ -1,0 +1,26 @@
+rules:
+  - id: email.external_sensitive_export
+    description: Block sensitive exports to external recipients
+    when:
+      tool: send_email
+      recipient_domain_not_in: [acme.com]
+      body_contains_any: [password, secret, api_key, customer_data, pii, iban, ssn]
+    action: block
+    severity: critical
+
+  - id: email.external_attachment.approval
+    description: Require approval for external email with attachments
+    when:
+      tool: send_email
+      has_attachment: true
+      recipient_domain_not_in: [acme.com]
+    action: require_approval
+    severity: high
+
+  - id: shell.dangerous_commands
+    description: Block dangerous shell commands
+    when:
+      tool: shell_exec
+      command_matches_any: ["rm -rf", "curl .* \\| ?sh", "cat .*\\.ssh", "nc -e", "chmod 777"]
+    action: block
+    severity: critical
